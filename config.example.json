@@ -1,0 +1,44 @@
+[
+  {
+    "type": "ondemand",
+    "name": "application",
+    "cmdline": "/path/to/app arguments",
+    "workdir": "/path/to/workdir",
+    "endpoint": "http://the.endpoint.where.the.app.is.reachable",
+    "body_regex": null,
+    "conflicts_with": ["another-ondemand-application-on-another-port"],
+    "port": 5000,
+    "path": "/path/start/filter/that/proc/manager/will/respond",
+    "timeout": 10
+  },
+  {
+    "type": "ondemand",
+    "name": "another-application-on-the-same-port",
+    "cmdline": "/path/to/app arguments",
+    "workdir": "/path/to/workdir",
+    "endpoint": "http://the.endpoint.where.the.app.is.reachable",
+    "body_regex": ".*Something in body of HTTP request.*",
+    "conflicts_with": ["another-ondemand-application"],
+    "port": 5000,
+    "path": "/path/start/filter/that/proc/manager/will/respond",
+    "timeout": 10
+  },
+  {
+    "type": "ondemand",
+    "name": "another-ondemand-application-on-another-port",
+    "cmdline": "/path/to/app arguments",
+    "workdir": "/path/to/workdir",
+    "endpoint": "http://the.endpoint.where.the.app.is.reachable",
+    "body_regex": null,
+    "conflicts_with": ["application"],
+    "port": 5001,
+    "path": "/path/start/filter/that/proc/manager/will/respond",
+    "timeout": 10
+  },
+  {
+    "type": "pausable",
+    "name": "application-that-will-run-but-will-stop-when-ondemand-app-will-start",
+    "cmdline": "/path/to/app arguments",
+    "workdir": "/path/to/workdir"
+  }
+]
