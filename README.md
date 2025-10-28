@@ -4,9 +4,9 @@ This is a simple python script utilizing uvicorn that holds processes and launch
 
 ## What it does?
 
-Upon a start it's a simple daemon that runs in a background and listens for connections on defined HTTP ports and
-starts a destination app on-demand, forwarding the request to it. Think of it as a
-"proxy that runs the service on demand".
+It's a simple script which is meant to be ran in a background (with a systemd, docker, windows task scheduler, or
+anything else) and listens for connections on defined HTTP ports and starts a destination app on-demand, forwarding
+the request to it. Think of it as a "proxy that runs the service on demand".
 
 ## Use cases
 
@@ -54,7 +54,7 @@ anywhere Python is supported (at least Windows/Linux/macOS were tested).
 
 Make a config.json from the config.example.json and start it:
 
-    .venv/bin/python rph.py
+    ./start.sh
 
 ### Windows
 
@@ -63,7 +63,9 @@ Make a config.json from the config.example.json and start it:
 
 Make a config.json from the config.example.json and start it:
 
-    .venv/Scripts/python rph.py
+    start.bat
+
+(Maybe I'll create a logic to set up the venv before start later ;P)
 
 ## Configuration
 
@@ -80,10 +82,10 @@ on a configured port.
 | Parameter      | Example                                                                         | Description                                                                                                                                                                                                                                                                                                    |
 |:---------------|:--------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | type           | `ondemand`                                                                      | The type of the process, ondemand in this case                                                                                                                                                                                                                                                                 |
-| name           | `koboldcpp-mistral`                                                             | An app name, that will be launched upon getting a request on a port                                                                                                                                                                                                                                            |
+| name           | `koboldcpp-mistral`                                                             | An app name, that will be launched upon getting a request on a port (Internal, to use with conflicts_with parameter)                                                                                                                                                                                           |
 | cmdline        | `/opt/koboldcpp --config Mistral-Small-3.2-24B-Instruct-2506-Q4_K_M.gguf.kcpps` | Path to the executable with it's arguments                                                                                                                                                                                                                                                                     |
 | workdir        | `/opt/llm-models`                                                               | Working directory for the process                                                                                                                                                                                                                                                                              |
-| endpoint       | `http://127.0.0.1:5000`                                                         | The endpoint that the app is normally reachable                                                                                                                                                                                                                                                                |
+| endpoint       | `http://127.0.0.1:5000`                                                         | The endpoint that the app is normally reachable. Incoming requests will be redirected there                                                                                                                                                                                                                    |
 | body_regex     | `.*Immediately stop roleplay and generate summary for the following.*`          | This is a regex pattern that the following app can accept. If null, it accepts all requests if no other app accepted the request on the same port. An experiment of mine, maybe useful                                                                                                                         |
 | conflicts_with | `koboldcpp-gemma`                                                               | An array that holds a list of other on-demand process that will also be killed when this process is launched                                                                                                                                                                                                   |
 | port           | `6000`                                                                          | The proxy port, which RPH will listen. This is where other apps should send their requests if they want to reach the app                                                                                                                                                                                       |
@@ -106,12 +108,12 @@ and redirected to smaller model).
 Same as on-demand, you can define multiple pausable processes. This is more straightforward - just a simple cmdline
 and workdir for each will do.
 
-| Parameter      | Example                                                                | Description                                                         |
-|:---------------|:-----------------------------------------------------------------------|:--------------------------------------------------------------------|
-| type           | `pausable`                                                             | The type of the process, ondemand in this case                      |
-| name           | `other-long-term-resource-hungry-app`                                  | An app name, that will be launched upon getting a request on a port |
-| cmdline        | `/opt/other-long-term-resource-hungry-app/app argument1 argument2`     | Path to the executable with it's arguments                          |
-| workdir        | `/opt/other-long-term-resource-hungry-app`                             | Working directory for the process                                   |
+| Parameter      | Example                                                                | Description                                                                                                   |
+|:---------------|:-----------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------|
+| type           | `pausable`                                                             | The type of the process, ondemand in this case                                                                |
+| name           | `other-long-term-resource-hungry-app`                                  | An app name, that will run indefinitely (Internal, just for you to distinct multiple entries from each other) |
+| cmdline        | `/opt/other-long-term-resource-hungry-app/app argument1 argument2`     | Path to the executable with it's arguments                                                                    |
+| workdir        | `/opt/other-long-term-resource-hungry-app`                             | Working directory for the process                                                                             |
 
 ## API
 
