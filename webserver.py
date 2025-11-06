@@ -83,8 +83,6 @@ class WebServer:
                             disconnect_event.set()
                             break
 
-                watcher_task = asyncio.create_task(disconnect_watcher())
-
                 try:
                     process: OnDemandProcessManager | None = None
 
@@ -131,6 +129,8 @@ class WebServer:
                             'more_body': False,
                         })
 
+                    watcher_task = asyncio.create_task(disconnect_watcher())
+
                     await asyncio.wait_for(self.request_from_original(
                         scope['method'],
                         f"{process.endpoint}{scope['path']}",
@@ -153,9 +153,10 @@ class WebServer:
                     })
 
                 finally:
-                    watcher_task.cancel()
-                    with contextlib.suppress(asyncio.CancelledError):
-                        await watcher_task
+                    if watcher_task is not None:
+                        watcher_task.cancel()
+                        with contextlib.suppress(asyncio.CancelledError):
+                            await watcher_task
 
                     await self._coordinator.resume_all()
 
