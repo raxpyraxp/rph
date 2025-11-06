@@ -117,7 +117,7 @@ class WebServer:
                                 logging.info("Stopping (client gone).")
                                 break
 
-                            print(f"Response: {chunk}", end="")
+                            print(f"Response: {chunk.decode('utf-8', errors='replace')}", end="")
                             await send({
                                 'type': 'http.response.body',
                                 'body': chunk,
