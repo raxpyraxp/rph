@@ -7,6 +7,7 @@
     "endpoint": "http://the.endpoint.where.the.app.is.reachable",
     "body_regex": null,
     "conflicts_with": ["another-ondemand-application-on-another-port"],
+    "ignore_http_codes": [502],
     "port": 5000,
     "path": "/path/start/filter/that/proc/manager/will/respond",
     "timeout": 10
@@ -19,6 +20,7 @@
     "endpoint": "http://the.endpoint.where.the.app.is.reachable",
     "body_regex": ".*Something in body of HTTP request.*",
     "conflicts_with": ["another-ondemand-application"],
+    "ignore_http_codes": [502],
     "port": 5000,
     "path": "/path/start/filter/that/proc/manager/will/respond",
     "timeout": 10
@@ -31,6 +33,7 @@
     "endpoint": "http://the.endpoint.where.the.app.is.reachable",
     "body_regex": null,
     "conflicts_with": ["application"],
+    "ignore_http_codes": [502],
     "port": 5001,
     "path": "/path/start/filter/that/proc/manager/will/respond",
     "timeout": 10

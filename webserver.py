@@ -12,12 +12,19 @@ from ondemandprocessmanager import OnDemandProcessManager
 from processcoordinator import ProcessCoordinator
 
 
+class IgnoredHttpCodeException(Exception):
+    code: int
+
+    def __init__(self, code: int):
+        self.code = code
+
 class WebServer:
     _coordinator: ProcessCoordinator
     _params: dict
     _processes: List[OnDemandProcessManager]
     path: str
     port: int
+    _ignore_http_codes: List[int]
     _endpoint: str
 
     def __init__(self, coordinator: ProcessCoordinator, params: dict):
@@ -26,6 +33,7 @@ class WebServer:
         self.path = params['path']
         self._endpoint = params['endpoint']
         self.port = params['port']
+        self._ignore_http_codes = params['ignore_http_codes']
         self._processes = []
 
     async def start(self):
@@ -54,6 +62,8 @@ class WebServer:
                 logging.info(f"Response error: {e.status} - {e.message}, still waiting for the server")
             except aiohttp.ClientConnectorError:
                 logging.info("Could not connect to the host, still waiting for the server")
+            except IgnoredHttpCodeException as e:
+                logging.info(f"Server returned code: {e.code}, still waiting for the server")
 
             await asyncio.sleep(5)
 
@@ -101,6 +111,9 @@ class WebServer:
                     headers = {key.decode('utf-8'): value.decode('utf-8') for key, value in scope['headers']}
 
                     async def reply_to_client(resp: ClientResponse):
+                        if resp.status in self._ignore_http_codes:
+                            raise IgnoredHttpCodeException(resp.status)
+
                         client_headers = [(key.encode('utf-8'), value.strip().encode('utf-8')) for key, value in
                                           resp.headers.items()]
 
