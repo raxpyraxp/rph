@@ -12,12 +12,14 @@ class OnDemandProcessManager(ProcessManager):
     endpoint: str
     _watched: bool
     conflicts_with: List[str]
+    group: str
     body_regex: str
 
     def __init__(self, name: str, cmdline: list, workdir: str, timeout: int, endpoint: str, conflicts_with: list[str],
-                 body_regex: str):
+                 group: str, body_regex: str):
         super().__init__(name, cmdline, workdir)
         self.conflicts_with = conflicts_with
+        self.group = group
         self._schedule_end_date = datetime.now()
         self.endpoint = endpoint
         self.timeout = timeout

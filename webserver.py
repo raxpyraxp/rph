@@ -202,7 +202,7 @@ class WebServer:
     def add_process(self, params: dict):
         process = OnDemandProcessManager(params['name'], params['cmdline'].split(" "),
                                          params['workdir'], params['timeout'], params['endpoint'],
-                                         params['conflicts_with'], params['body_regex'])
+                                         params['conflicts_with'], params['group'], params['body_regex'])
 
         self._processes.append(process)
         self._coordinator.add(process)

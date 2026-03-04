@@ -42,7 +42,7 @@ class ProcessCoordinator:
 
     async def stop_all_ondemand(self, requesting_process: OnDemandProcessManager):
         for proc in self.ondemand_processes:
-            if proc.name in requesting_process.conflicts_with:
+            if proc.name in requesting_process.conflicts_with or proc.group == requesting_process.group:
                 await proc.terminate()
 
     async def resume_all(self):
